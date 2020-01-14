@@ -282,12 +282,15 @@ def main(train_data_dir, validation_data_dir, test_data_dir_1, idx=0, value=0.00
     df.to_csv(name_save_predictions_3, index=False)
     
     # -----------now lets calculate the AUC---------------------------------
+
+
+    current_wroking_directory = os.getcwd()
     
-    real_test = '/home/magnus/Jorge/GNB_project/test_CapsNets/data/Real_values_test.csv'
+    real_test = ''.join([current_wroking_directory, '/data/Real_values_test.csv'])
     auch_0 = calculate_auc_and_roc(name_save_predictions_1, real_test)
     print(auch_0, 'test dataset')
     
-    real_val = '/home/magnus/Jorge/GNB_project/test_CapsNets/data/Real_values_validation.csv'
+    real_val = ''.join([current_wroking_directory, '/data/Real_values_validation.csv'])
     auch_1 = calculate_auc_and_roc(name_save_predictions_2, real_val)
     print(auch_1, 'validation dataset')
 
@@ -334,15 +337,15 @@ if __name__ == "__main__":
 
     #initial_dir = '/home/jl/aerial_photos_plus/'
     #folders = os.listdir(initial_dir)
-    
-    test_directory= '/home/magnus/Jorge/GNB_project/test_CapsNets/data/test/'
+    current_wroking_directory = os.getcwd()
+    test_directory= ''.join([current_wroking_directory, '/test_CapsNets/data/test/'])
 
     #train_dir = '/home/william/m18_jorge/Desktop/THESIS/DATA/transfer_learning_training/training/'
     #val_dir = '/home/william/m18_jorge/Desktop/THESIS/DATA/transfer_learning_training/validation/'
 
 
-    train_dir = '/home/magnus/Jorge/GNB_project/test_CapsNets/data/training_validation/training/'
-    val_dir = '/home/magnus/Jorge/GNB_project/test_CapsNets/data/training_validation/validation/'
+    train_dir = ''.join([current_wroking_directory, '/test_CapsNets/data/training_validation/training/'])
+    val_dir = ''.join([current_wroking_directory,'/test_CapsNets/data/training_validation/validation/'])
 
     indx = 0
     value = 0
