@@ -177,7 +177,7 @@ def main(train_data_dir, validation_data_dir, test_data_dir_1, idx=0, value=0.00
     model.compile(optimizer=rms, loss='categorical_crossentropy', metrics=['accuracy'])
     model.summary()    
     model.fit_generator(train_gen, 
-                    epochs = 5, 
+                    epochs = 1,
                     shuffle=1,
                     steps_per_epoch = 50,
                     validation_steps = 50,
@@ -222,7 +222,7 @@ def main(train_data_dir, validation_data_dir, test_data_dir_1, idx=0, value=0.00
     test_gen = test_idg.flow_from_directory(test_data_dir_1,
                                             target_size=(img_width, img_height),
                                             shuffle=False,
-                                            batch_size = 50)
+                                            batch_size = 269)
 
     evaluation_0 = model.evaluate_generator(test_gen, verbose=True, steps=1)
     print(evaluation_0, 'evaluation 0 dataset')
@@ -244,10 +244,6 @@ def main(train_data_dir, validation_data_dir, test_data_dir_1, idx=0, value=0.00
                      axis=1)
     label_index = {v: k for k,v in train_gen.class_indices.items()}
     predicts = [label_index[p] for p in predicts]
-
-    print(len(x_0))
-    print(len(x_1))
-    print(len(predicts))
 
     df = pd.DataFrame(columns=['class_1', 'class_2', 'fname', 'over all'])
     df['fname'] = [os.path.basename(x) for x in test_gen.filenames]
@@ -282,26 +278,25 @@ def main(train_data_dir, validation_data_dir, test_data_dir_1, idx=0, value=0.00
     label_index = {v: k for k,v in va_gen2.class_indices.items()}
     predict3 = [label_index[p] for p in predict3]
     
-    df = pd.DataFrame(columns=['class_1', 'class_2', 'fname', 'over all'])
-    df['fname'] = names
-    df['class_1'] = x_0
-    df['class_2'] = x_1
-    df['over all'] = predict3
-    name_save_predictions_3 = ''.join(['predictions_VGG_val_dataset', '_', str(idx), '_', str(value), '_.csv'])
-    df.to_csv(name_save_predictions_3, index=False)
+    #df = pd.DataFrame(columns=['class_1', 'class_2', 'fname', 'over all'])
+    #df['fname'] = names
+    #df['class_1'] = x_0
+    #df['class_2'] = x_1
+    #df['over all'] = predict3
+    #name_save_predictions_3 = ''.join(['predictions_VGG_val_dataset', '_', str(idx), '_', str(value), '_.csv'])
+    #df.to_csv(name_save_predictions_3, index=False)
     
     # -----------now lets calculate the AUC---------------------------------
 
-
     current_wroking_directory = os.getcwd()
     
-    real_test = ''.join([current_wroking_directory, '/data/Real_values_test.csv'])
+    real_test = ''.join([current_wroking_directory, '/GNB2020/test_CapsNets/data/Real_values_test.csv'])
     auch_0 = calculate_auc_and_roc(name_save_predictions_1, real_test)
     print(auch_0, 'test dataset')
     
-    real_val = ''.join([current_wroking_directory, '/data/Real_values_validation.csv'])
-    auch_1 = calculate_auc_and_roc(name_save_predictions_2, real_val)
-    print(auch_1, 'validation dataset')
+    #real_val = ''.join([current_wroking_directory, '/GNB2020/test_CapsNets/data/Real_values_validation.csv'])
+    #auch_1 = calculate_auc_and_roc(name_save_predictions_2, real_val)
+    #print(auch_1, 'validation dataset')
 
 
     # ----------------- save results ---------------------------
@@ -339,8 +334,6 @@ def main(train_data_dir, validation_data_dir, test_data_dir_1, idx=0, value=0.00
         plt.legend(loc='best')
         plt.show()"""
 
-#train_data_dir = '/home/william/m18_jorge/Desktop/THESIS/DATA/training_no_data_augment/training/'
-#validation_data_dir = '/home/william/m18_jorge/Desktop/THESIS/DATA/training_no_data_augment/validation/'
 
 if __name__ == "__main__":
 
@@ -348,10 +341,6 @@ if __name__ == "__main__":
     #folders = os.listdir(initial_dir)
     current_wroking_directory = os.getcwd()
     test_directory= ''.join([current_wroking_directory, '/test_CapsNets/data/test/'])
-
-    #train_dir = '/home/william/m18_jorge/Desktop/THESIS/DATA/transfer_learning_training/training/'
-    #val_dir = '/home/william/m18_jorge/Desktop/THESIS/DATA/transfer_learning_training/validation/'
-
 
     train_dir = ''.join([current_wroking_directory, '/test_CapsNets/data/training_validation/training/'])
     val_dir = ''.join([current_wroking_directory,'/test_CapsNets/data/training_validation/validation/'])
