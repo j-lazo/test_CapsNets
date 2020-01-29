@@ -1,4 +1,5 @@
 import numpy as np
+import tensorflow as tf
 from keras.preprocessing.image import ImageDataGenerator
 from keras.applications.vgg16 import preprocess_input
 from keras.models import Sequential
@@ -15,6 +16,11 @@ from keras.layers import Convolution2D, Dense, Input, Flatten, Dropout, MaxPooli
 from sklearn.metrics import roc_curve, auc
 from keras import regularizers
 
+#gpu = tf.config.experimental.list_physical_devices('GPU')
+#tf.config.experimental.set_memory_growth(gpu[0], True)
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
+session = tf.Session(config=config)
 
 def load_labels(csv_file):
     labels = []
@@ -37,7 +43,6 @@ def load_predictions(csv_file):
             image_name.append(row[2])
             
     return labels, image_name
-
 
 
 def copy_files(initial_dir, final_dir):
@@ -134,17 +139,17 @@ def main(train_data_dir, validation_data_dir, test_data_dir_1, idx=0, value=0.00
 
     train_gen = train_idg.flow_from_directory(train_data_dir,
                                       target_size=(ROWS, COLS),
-                                      batch_size = 100)
+                                      batch_size = 50)
 
     validation_gen = val_idg.flow_from_directory(validation_data_dir,
                                       target_size=(ROWS, COLS),
-                                      batch_size = 100)
+                                      batch_size = 50)
                                       
     lenv_test1 = len(os.listdir(test_data_dir_1))                                     
     test_gen = test_idg.flow_from_directory(test_data_dir_1, 
                                     target_size=(ROWS, COLS), 
                                     shuffle=False,
-                                    batch_size = 100)   
+                                    batch_size = 50)
 
     # build the VGG16 network
     base_model = applications.VGG16(include_top=False, weights='imagenet')    
@@ -194,7 +199,7 @@ def main(train_data_dir, validation_data_dir, test_data_dir_1, idx=0, value=0.00
 
 
     history = model.fit_generator(train_gen, 
-                epochs = 30, 
+                epochs = 2,
                 shuffle=1,
                 steps_per_epoch = 50,
                 validation_steps = 50,
@@ -207,7 +212,7 @@ def main(train_data_dir, validation_data_dir, test_data_dir_1, idx=0, value=0.00
                                    fill_mode ='nearest')
     validation_gen = val_idg.flow_from_directory(validation_data_dir,
                                                  target_size=(img_width, img_height),
-                                                 batch_size=100)
+                                                 batch_size=50)
 
     evaluation = model.evaluate_generator(validation_gen, verbose=True, steps=10)
     print(evaluation, 'Validation dataset')
@@ -217,7 +222,7 @@ def main(train_data_dir, validation_data_dir, test_data_dir_1, idx=0, value=0.00
     test_gen = test_idg.flow_from_directory(test_data_dir_1,
                                             target_size=(img_width, img_height),
                                             shuffle=False,
-                                            batch_size = 200)
+                                            batch_size = 50)
 
     evaluation_0 = model.evaluate_generator(test_gen, verbose=True, steps=1)
     print(evaluation_0, 'evaluation 0 dataset')
@@ -239,7 +244,11 @@ def main(train_data_dir, validation_data_dir, test_data_dir_1, idx=0, value=0.00
                      axis=1)
     label_index = {v: k for k,v in train_gen.class_indices.items()}
     predicts = [label_index[p] for p in predicts]
-    
+
+    print(len(x_0))
+    print(len(x_1))
+    print(len(predicts))
+
     df = pd.DataFrame(columns=['class_1', 'class_2', 'fname', 'over all'])
     df['fname'] = [os.path.basename(x) for x in test_gen.filenames]
     df['class_1'] = x_0
